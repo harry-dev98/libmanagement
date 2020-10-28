@@ -9,6 +9,8 @@ const styles = {
         backgroundColor: 'white',
         borderRadius: 20,
         boxShadow: "6px 6px 8px -2px #262626",
+        display: 'flex',
+        flexDirection: 'column',
     },
     formDiv: {
         display: 'flex',
@@ -24,7 +26,6 @@ const styles = {
         display: 'flex',
         flex:1, 
         justifySelf: 'center',
-        // justifyContent: ,
         padding: 10,
         margin: 15,
     }
@@ -33,20 +34,40 @@ const styles = {
 
 export default function Form(props){
     const [lists, setLists] = useState([]);
+    let refs = {};
 
-    useEffect((eff)=>{
-        console.log(eff);
+    useEffect(()=>{
         setLists(props.formItems || []);
     }, [props.formItems])
-    const addInputRef = (ref, label)=>{
-        console.log(label, ref);
+
+    const addInputRef = (ref, name)=>{
+        console.log(ref);
+        refs = {
+            ...refs,
+            [name]: ref,
+        };
     }
-    const submitForm = ()=>{
-        console.log('submit');
+
+    const submitForm = (event)=>{
+        event.preventDefault();
+        const form = {
+            which: props.which,
+        };
+        for(const [key, val] of Object.entries(refs)){
+            if(val.type === "checkbox"){
+                form[key] = val.checked;
+            } else {
+
+                form[key] = val.value;
+            }
+        }
+        props.closePopup({
+            submit: true,
+            form: form
+        });
     }
-    const closeForm = ()=>{
-        console.log('submit');
-    }
+
+
     return (
         <>
             { (props.open)?
@@ -55,7 +76,7 @@ export default function Form(props){
                         <h3 style={{color: '#042F19'}}>{props.which}</h3>
                     </div>
                     <div style={styles.formDiv}>
-                    <form style={styles.form}>
+                    <form style={styles.form} onSubmit={submitForm}>
                         {lists.map((item, index)=>(
                             <div key={index} style={styles.formItem}>
                                 <label
@@ -77,8 +98,8 @@ export default function Form(props){
                             </div>
                         ))}
                         <div style={{...styles.formItem, justifyContent: 'space-evenly'}}>
-                            <input type='submit' value="Submit" title="Click to submit form" aria-label="submit form" onClick={submitForm()}/>
-                            <input type='button' value="Close" title="Click to close form" aria-label="close form" onClick={closeForm()}/>
+                            <input type='submit' value="Submit" title="Click to submit form" aria-label="submit form" onClick={submitForm}/>
+                            <input type='button' value="Close" title="Click to close form" aria-label="close form" onClick={()=>props.closePopup({submit: false})}/>
                         </div>
                     </form>
                     </div>

@@ -2,6 +2,7 @@ import React, { useState , useEffect} from 'react';
 import styles from './css/Pagination.module.css';
 
 import PaginationTab from './PaginationTab';
+import Table from './Table';
 
 export default function Pagination(props){
     const [items, setItems] = useState([]);
@@ -10,6 +11,14 @@ export default function Pagination(props){
     const [perPage, setPerPage] = useState(10);
     const [totalItems, setTotalItems] = useState(1);
     const neighbourTabBtns = 2;
+
+    useEffect(()=>{
+        setItems(props.items||[]);
+    }, [props.items]);
+
+    useEffect(() => {
+        setHeaders(props.headers||[]);
+    }, [props.headers]);
 
     const handleNext = () => {
         console.log('next');
@@ -26,16 +35,16 @@ export default function Pagination(props){
     return (
         <div>
             <PaginationTab 
-                title={"Books"}
+                title={props.title}
                 page={pageNo}
-                total={totalPages}
+                total={Math.ceil(totalItems/perPage)}
                 neighbourTabBtns={neighbourTabBtns}
                 perPage={perPage}
                 next={handleNext}
                 prev={handlePrev}
                 goto={handleGoTO}
             />
-            <Tables items={items} headers={headers} />
+            <Table items={items} headers={headers} />
         </div>
     )
 }

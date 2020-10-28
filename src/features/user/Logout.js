@@ -2,82 +2,57 @@ import React, { useEffect, useState } from 'react';
 import Card from '../common/Card';
 import Form from '../common/Form';
 
+import { useHistory } from 'react-router-dom';
+
+import { useDispatch } from 'react-redux';
+import {
+    login,
+    logout,
+} from './state/UserSlice';
+
+import {
+    loginform ,
+    registrationform
+} from '../utils/formdata';
+
 export default function Logout(){
+    const history = useHistory();
+
     const [open, setOpen] = useState(false);
     const [form, setForm] = useState([]);
     const [which, setWhich] = useState("")
 
+    const dispatch = useDispatch();
+    dispatch(logout());
     useEffect((eff)=>{
         console.log(eff);
         if(!open && which !== ""){
             setOpen(true);
         }
-    }, [which]);
+    }, [which, open]);
+
+    useEffect(() => {
+        if(!open){
+            setWhich("");
+        }
+    }, [open]);
+
+    const closePopup = ({submit, form}) => {
+        if(submit){
+            console.log(form.role)
+            dispatch(login({user: 'demo', isAdmin: form.role }));
+            
+        }
+        setOpen(false);
+        history.push('/');
+    }   
 
     const formPopup = (which)=>{
         if(which === "login"){
-            setForm([
-                {
-                    label: 'Username', 
-                    name: 'username', 
-                    type: 'text', 
-                    title: 'Type your username', 
-                    required: true, 
-                },
-                {
-                    label: 'Password', 
-                    name: 'password', 
-                    type: 'password', 
-                    title: 'Type your password', 
-                    required: true, 
-                },
-                {
-                    label: 'Admin/Staff', 
-                    name: 'admin or staff', 
-                    type: 'checkbox', 
-                    title: 'Check if loging in as admin/staff', 
-                    required: true, 
-                },
-            ]);
+            setForm(loginform);
             setWhich("Login");
         } else {
-            setForm([
-                {
-                    label: 'Username', 
-                    name: 'username', 
-                    type: 'text', 
-                    title: 'Type your username', 
-                    required: true, 
-                },
-                {
-                    label: 'Password', 
-                    name: 'password', 
-                    type: 'password', 
-                    title: 'Type your password', 
-                    required: true, 
-                },
-                {
-                    label: 'Confirm Password', 
-                    name: 'confirm password', 
-                    type: 'password', 
-                    title: 'Re-Type your password', 
-                    required: true, 
-                },
-                {
-                    label: 'Email', 
-                    name: 'email', 
-                    type: 'email', 
-                    title: 'Type your email id', 
-                    required: true, 
-                },
-                {
-                    label: 'Mob. Number', 
-                    name: 'mobile', 
-                    type: 'number', 
-                    title: 'Type your email id', 
-                    required: true, 
-                },
-            ]);
+            setForm(registrationform);
             setWhich("Registration");
         }
     }
@@ -93,11 +68,12 @@ export default function Logout(){
             label: 'Register', 
             onclick: ()=>{formPopup("register")},
             haspopup: true},
-    ]
+    ];
+
     return (
         <>
             <Card list={list} />
-            <Form open={open} formItems={form} which={which} />
+            <Form open={open} formItems={form} which={which} closePopup={closePopup} />
         </>
     );
 }

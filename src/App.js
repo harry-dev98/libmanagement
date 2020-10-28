@@ -1,4 +1,5 @@
 import React from 'react';
+import {BrowserRouter as Router, Link} from 'react-router-dom';
 import Routes from './route';
 
 const styles = {
@@ -62,19 +63,20 @@ function App() {
   ]
 
   return (
-    <>
+    <Router>
       <header style={styles.header}>
         <div style={styles.container}>
           <div style={styles.boldText}>E-Library</div>
         </div>
         <div style={{...styles.container, justifyContent: 'flex-end'}}>
           { links.map((link, index)=>(
-            <a key={index} 
+            <Link key={index} 
               style={styles.text} 
-              href={link.href} 
+              to={link.href}
+              onClick={link.onClick} 
               title={link.title} 
               aria-label={link.title} 
-            >{link.label}</a>
+            >{link.label}</Link>
           )) }
         </div>
       </header>
@@ -87,7 +89,7 @@ function App() {
             User Interface provide complete platform accessiblity to all.</p>
         </div>
       </footer>
-    </>
+    </Router>
   );
 }
 
